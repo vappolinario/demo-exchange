@@ -13,8 +13,8 @@
         }
 
         public static readonly TipoSegmento Varejo = new TipoSegmento("VAREJO", "Segmento para cliente do varejo", nameof(Varejo));
-        public static readonly TipoSegmento Personnalite = new TipoSegmento("PERSONNALITE", "Segmento para cliente do varejo", nameof(Personnalite));
-        public static readonly TipoSegmento Private = new TipoSegmento("PRIVATE", "Segmento para cliente do varejo", nameof(Private));
+        public static readonly TipoSegmento Personnalite = new TipoSegmento("PERSONNALITE", "Segmento para cliente do Personnalite", nameof(Personnalite));
+        public static readonly TipoSegmento Private = new TipoSegmento("PRIVATE", "Segmento para cliente do Private", nameof(Private));
 
         public string DesricaoSimples { get; }
 
