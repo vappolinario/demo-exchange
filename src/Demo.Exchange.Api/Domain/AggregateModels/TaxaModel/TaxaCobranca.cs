@@ -5,7 +5,7 @@
 
     public class TaxaCobranca : Entity
     {
-        private TaxaCobranca()
+        protected TaxaCobranca()
         {
         }
 

@@ -33,10 +33,10 @@
         [TestCase(5, 2.1, false)]
         public void Deve_Validar_Alteracaoes_Entre_Objetos(decimal valorCorrente, decimal valorNovo, bool resultaEsperado)
         {
-            var taxaNovo = ValorTaxaCobranca.Create(valorNovo);
+            var novaTaxa = ValorTaxaCobranca.Create(valorNovo);
             var taxaCorrente = ValorTaxaCobranca.Create(valorCorrente);
 
-            var validarTaxaTrocou = taxaCorrente.Value.Equals(taxaNovo.Value);
+            var validarTaxaTrocou = taxaCorrente.Value.Equals(novaTaxa.Value);
 
             validarTaxaTrocou.Should().Be(resultaEsperado);
         }

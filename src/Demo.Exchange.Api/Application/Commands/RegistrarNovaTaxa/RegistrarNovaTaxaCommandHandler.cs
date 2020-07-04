@@ -11,6 +11,8 @@
     public class RegistrarNovaTaxaCommandHandler : Handler, IRequestHandler<RegistrarNovaTaxaCommand, RegistrarNovaTaxaResponse>
     {
         private TaxaCobranca TaxaCobranca;
+        private TipoSegmento TipoSegmento;
+
         private readonly ITaxaCobrancaRepository _taxaCobrancaRepository;
 
         public RegistrarNovaTaxaCommandHandler(IMediator mediator, ILoggerFactory logger, ITaxaCobrancaRepository taxaCobrancaRepository)
@@ -30,18 +32,20 @@
             var valorTaxaCobranca = ValorTaxaCobranca.Create(request.ValorTaxa);
             if (valorTaxaCobranca.IsFailure)
             {
+                response.AddError(Errors.General.InvalidCommandArguments()
+                                                .AddErroDetail(Errors.General.InvalidArgument("ValorTaxaInvalido", string.Join("|", valorTaxaCobranca.Messages))));
+                return response;
             }
 
-            var tipoSegment = TipoSegmento.ObterPorId(request.Segmento);
-            if (tipoSegment is null)
-            {
-            }
-
-            await VerficarSegmentoJaRegistrado(request, response, tipoSegment);
+            ObterTipoSegmentoPorId(request, response);
             if (response.IsFailure)
                 return response;
 
-            TaxaCobranca = new TaxaCobranca(Guid.NewGuid().ToString(), valorTaxaCobranca.Value, tipoSegment);
+            await VerficarSegmentoJaRegistrado(request, response);
+            if (response.IsFailure)
+                return response;
+
+            TaxaCobranca = new TaxaCobranca(Guid.NewGuid().ToString(), valorTaxaCobranca.Value, TipoSegmento);
 
             await Registrar(request, response);
             if (response.IsFailure)
@@ -54,14 +58,26 @@
             return response;
         }
 
-        private async Task VerficarSegmentoJaRegistrado(RegistrarNovaTaxaCommand request, RegistrarNovaTaxaResponse response, TipoSegmento tipoSegmento)
+        private void ObterTipoSegmentoPorId(RegistrarNovaTaxaCommand request, RegistrarNovaTaxaResponse response)
+        {
+            TipoSegmento = TipoSegmento.ObterPorId(request.Segmento);
+            if (TipoSegmento is null)
+            {
+                response.AddError(Errors.General.NotFound(nameof(TipoSegmento), request.Segmento));
+
+                Logger.LogWarning($"{response.ErrorResponse}");
+                return;
+            }
+        }
+
+        private async Task VerficarSegmentoJaRegistrado(RegistrarNovaTaxaCommand request, RegistrarNovaTaxaResponse response)
         {
             try
             {
-                TaxaCobranca = await _taxaCobrancaRepository.ObterTaxaCobrancaPorSegmento(tipoSegmento.Id);
+                TaxaCobranca = await _taxaCobrancaRepository.ObterTaxaCobrancaPorSegmento(TipoSegmento.Id);
                 if (!string.IsNullOrEmpty(TaxaCobranca.TaxaCobrancaId))
                 {
-                    response.AddError(Errors.RegistrarNovaTaxaErros.TaxaParaSegmentoJaRegistrada(tipoSegmento.Id));
+                    response.AddError(Errors.RegistrarNovaTaxaErros.TaxaParaSegmentoJaRegistrada(TipoSegmento.Id));
                     return;
                 }
             }
