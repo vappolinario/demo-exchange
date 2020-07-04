@@ -10,6 +10,7 @@ Para o banco de dados, foi utilizado o MariaDB
 `docker run --name mariadb -e MYSQL_ROOT_PASSWORD=admin -d -p 3306:3306 mariadb`
 
 **Comando acima irá expor a porta 3306 para utilizar instâncias do MariaDB**
+
 **Recomandado utilizar o client DBeaver para administração do banco de dados https://dbeaver.io/**
 
 Para o mecanismo de cache, foi utilizado Memcached
