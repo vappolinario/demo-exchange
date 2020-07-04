@@ -8,6 +8,7 @@ Para o projeto foram usadas as seguintes imagens:
 Para o banco de dados, foi utilizado o MariaDB
 
 `docker run --name mariadb -e MYSQL_ROOT_PASSWORD=admin -d -p 3306:3306 mariadb`
+
 **Comando acima irá expor a porta 3306 para utilizar instancias do MariaDB**
 **Recomandado utilizar o client DBeaver para administração do banco dedados https://dbeaver.io/**
 
