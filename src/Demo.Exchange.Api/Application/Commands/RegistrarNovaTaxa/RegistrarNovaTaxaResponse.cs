@@ -11,13 +11,6 @@ namespace Demo.Exchange.Application.Commands.RegistrarNovaTaxa
         public DateTime CriadoEm { get; set; }
     }
 
-    public struct TaxaSegmentoResponse
-    {
-        public string TipoSegmento { get; set; }
-        public decimal ValorTaxa { get; set; }
-        public DateTime CriadoEm { get; set; }
-    }
-
     public class RegistrarNovaTaxaResponse : Response<TaxaResponse>
     {
         public RegistrarNovaTaxaResponse(string requestId)
@@ -36,16 +29,6 @@ namespace Demo.Exchange.Application.Commands.RegistrarNovaTaxa
                 CriadoEm = taxaCobranca.CriadoEm,
                 ValorTaxa = taxaCobranca.ValorTaxa.Valor,
                 TipoSegmento = taxaCobranca.TipoSegmento.DesricaoSimples,
-            };
-        }
-
-        public static TaxaSegmentoResponse ConverterEntidadeParaTaxaSegmentoResponse(this TaxaCobranca taxaCobranca)
-        {
-            return new TaxaSegmentoResponse
-            {
-                TipoSegmento = taxaCobranca.TipoSegmento.Id,
-                CriadoEm = taxaCobranca.CriadoEm,
-                ValorTaxa = taxaCobranca.ValorTaxa.Valor,
             };
         }
     }

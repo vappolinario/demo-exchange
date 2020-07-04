@@ -32,10 +32,11 @@
             TaxaCobranca = await _taxaCobrancaRepository.ObterPorId(request.Id);
 
             var taxaResponse = TaxaCobranca.ConverterEntidadeParaResponse();
-            var segmentoResponse = TaxaCobranca.ConverterEntidadeParaTaxaSegmentoResponse();
 
-            await _cacheRepository.Set(taxaResponse.Id, taxaResponse);
-            await _cacheRepository.Set(segmentoResponse.TipoSegmento, segmentoResponse);
+            var taxaResponseTask = _cacheRepository.Set(taxaResponse.Id, taxaResponse);
+            var taxaResponseSegmentoTask = _cacheRepository.Set(taxaResponse.TipoSegmento, taxaResponse);
+
+            await Task.WhenAll(taxaResponseTask, taxaResponseSegmentoTask);
 
             return response;
         }

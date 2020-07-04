@@ -25,7 +25,7 @@
         [HttpGet]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.InternalServerError)]
-        [ProducesResponseType(typeof(TaxaSegmentoResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(TaxaResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> ObterTaxaCobrancaPorSegmento([FromQuery] string segmento)
         {
             var response = await _mediator.Send(new ObterTaxaCobrancaPorSegmentoQuery(segmento));

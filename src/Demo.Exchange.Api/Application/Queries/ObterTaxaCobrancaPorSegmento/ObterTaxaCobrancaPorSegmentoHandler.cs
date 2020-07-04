@@ -27,14 +27,14 @@
             var tipoSegmento = TipoSegmento.ObterPorId(request.TipoSegmento);
             if (tipoSegmento is null)
             {
-                response.AddError(Errors.General.NotFound("Segmento", request.TipoSegmento));
+                response.AddError(Errors.General.NotFound("TipoSegmento", request.TipoSegmento));
                 return response;
             }
 
             var tipoSegmentoResponse = await _cacheProvider.GetValueOrCreate(tipoSegmento.Id,
                                                                              async () => await ObterTaxaCobrancaPorSegmento(request, response, tipoSegmento));
 
-            if (tipoSegmentoResponse.Equals(default(TaxaSegmentoResponse)))
+            if (tipoSegmentoResponse.Equals(default(TaxaResponse)))
             {
                 response.AddError(Errors.General.NotFound("Segmento", request.TipoSegmento));
                 return response;
@@ -45,11 +45,18 @@
             return response;
         }
 
-        private async Task<TaxaSegmentoResponse> ObterTaxaCobrancaPorSegmento(ObterTaxaCobrancaPorSegmentoQuery request, ObterTaxaCobrancaPorSegmentoResponse response, TipoSegmento tipoSegmento)
+        private async Task<TaxaResponse> ObterTaxaCobrancaPorSegmento(ObterTaxaCobrancaPorSegmentoQuery request, ObterTaxaCobrancaPorSegmentoResponse response, TipoSegmento tipoSegmento)
         {
             var taxaCobranca = await _taxaCobrancaRepository.ObterTaxaCobrancaPorSegmento(tipoSegmento.Id);
+            if (string.IsNullOrEmpty(taxaCobranca.TaxaCobrancaId))
+            {
+                response.AddError(Errors.General.NotFound(nameof(TaxaCobranca), request.TipoSegmento));
+                Logger.LogWarning($"{response.ErrorResponse}");
 
-            return taxaCobranca.ConverterEntidadeParaTaxaSegmentoResponse();
+                return default;
+            }
+
+            return taxaCobranca.ConverterEntidadeParaResponse();
         }
     }
 }
