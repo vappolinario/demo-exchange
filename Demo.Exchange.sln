@@ -7,13 +7,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{86E90A93-A31
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{BC52995E-7B30-46F8-9C15-9450F770E0A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Exchange.Api", "src\Demo.Exchange.Api\Demo.Exchange.Api.csproj", "{901DA050-059D-4F50-98EC-90690FB8DF2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Exchange.Api", "src\Demo.Exchange.Api\Demo.Exchange.Api.csproj", "{901DA050-059D-4F50-98EC-90690FB8DF2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Exchange.UnitTest", "test\Demo.Exchange.UnitTest\Demo.Exchange.UnitTest.csproj", "{6F5744F0-2880-4A7E-9893-BCEF82F2B8EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Exchange.UnitTest", "test\Demo.Exchange.UnitTest\Demo.Exchange.UnitTest.csproj", "{6F5744F0-2880-4A7E-9893-BCEF82F2B8EA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EDC3700B-2B4A-4F33-8867-0D333C3BDAA3}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{884CA048-A28E-4A39-87F0-58F6FE422E91}"
