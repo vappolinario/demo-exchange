@@ -32,14 +32,19 @@ Obs: Você pode executar apenas esse comando, que o mesmo também irá fazer o p
 
 **WARNING**
 
-Antes de consultar os endpoinst do serviço será necessário executar o script de criação de banco dados que está na pasta demo-exchange/src/Demo.Exchange.Api/Infra/Repositories/Scripts.
+Antes de consultar os endpoinst do serviço será necessário executar o script de criação de banco dados que está na pasta **demo-exchange/src/Demo.Exchange.Api/Infra/Repositories/Scripts**.
+
+## Swagger
+O serviço contem a documentação baseada no Swagger, estrutura de software de código aberto que ajuda os desenvolvedores a projetar, criar, documentar e consumir serviços da Web RESTfu
+
+**Url Swagger: http://localhost:5000/swagger/index.html**
 
 ## Packages
-As aplicações fazem uso dos seguintes packages
+A aplicação faz uso dos seguintes packages (nuget):
 
-https://www.nuget.org/packages/EnyimMemcachedCore/ : Bliblioteca que abstrai utilização do Memcached
+**https://www.nuget.org/packages/EnyimMemcachedCore/ : Bliblioteca que abstrai utilização do Memcached**
 
-https://www.nuget.org/packages/MySqlConnector/ : Bliblioteca que abstrai para utilização do MariDB
+**https://www.nuget.org/packages/MySqlConnector/ : Bliblioteca que abstrai para utilização do MariDB**
 
 ## Fontes de referência
 https://www.twitch.tv/phatboyg
