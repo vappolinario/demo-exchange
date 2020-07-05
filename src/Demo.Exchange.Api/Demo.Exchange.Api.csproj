@@ -30,7 +30,6 @@
     <Folder Include="Domain\AggregateModels\TaxaModel\" />
     <Folder Include="Domain\SeedWorks\" />
     <Folder Include="Domain\Services\CadernoFomulas\" />
-    <Folder Include="Application\" />
   </ItemGroup>
 
 </Project>

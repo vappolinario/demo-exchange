@@ -28,6 +28,8 @@
 
         public Result AtualizarTaxa(ValorTaxaCobranca novoValorCobranca)
         {
+            ClearDomainEvents();
+
             if (ValorTaxa.Equals(novoValorCobranca))
                 return Result.Fail("Não houve alteração do valor da taxa.");
 

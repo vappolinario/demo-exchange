@@ -1,15 +1,7 @@
-﻿using Demo.Exchange.Domain.AggregateModel.TaxaModel;
-using System;
-
-namespace Demo.Exchange.Application.Commands.RegistrarNovaTaxa
+﻿namespace Demo.Exchange.Application.Commands.RegistrarNovaTaxa
 {
-    public struct TaxaResponse
-    {
-        public string Id { get; set; }
-        public string TipoSegmento { get; set; }
-        public decimal ValorTaxa { get; set; }
-        public DateTime CriadoEm { get; set; }
-    }
+    using Demo.Exchange.Application.Models;
+    using Demo.Exchange.Domain.AggregateModel.TaxaModel;
 
     public class RegistrarNovaTaxaResponse : Response<TaxaResponse>
     {
@@ -28,7 +20,7 @@ namespace Demo.Exchange.Application.Commands.RegistrarNovaTaxa
                 Id = taxaCobranca.TaxaCobrancaId,
                 CriadoEm = taxaCobranca.CriadoEm,
                 ValorTaxa = taxaCobranca.ValorTaxa.Valor,
-                TipoSegmento = taxaCobranca.TipoSegmento.DesricaoSimples,
+                TipoSegmento = taxaCobranca.TipoSegmento.Id,
             };
         }
     }

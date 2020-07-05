@@ -7,8 +7,8 @@
         public ObterCotacaoPorMoedaQuery(string segmento, string moeda, decimal quantidade)
         {
             Segmento = segmento;
-            Moeda = moeda;
             Quantidade = quantidade;
+            Moeda = moeda.Trim().ToUpperInvariant();
         }
 
         public string Segmento { get; }

@@ -1,5 +1,6 @@
 ﻿namespace Demo.Exchange.Api.Controllers.v1
 {
+    using Demo.Exchange.Application.Models;
     using Demo.Exchange.Application.Queries.ObterCotacaoPorMoeda;
     using MediatR;
     using Microsoft.AspNetCore.Mvc;

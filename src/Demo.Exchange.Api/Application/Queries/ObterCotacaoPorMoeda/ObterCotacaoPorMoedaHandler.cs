@@ -1,7 +1,10 @@
 ﻿namespace Demo.Exchange.Application.Queries.ObterCotacaoPorMoeda
 {
+    using Demo.Exchange.Application.Commands.RegistrarNovaTaxa;
+    using Demo.Exchange.Application.Models;
     using Demo.Exchange.Domain.AggregateModel.TaxaModel;
     using Demo.Exchange.Domain.Services.CadernoFomulas;
+    using Demo.Exchange.Infra.Cache.Memcached;
     using Demo.Exchange.Infra.Connectors;
     using MediatR;
     using Microsoft.Extensions.Logging;
@@ -12,10 +15,12 @@
 
     public class ObterCotacaoPorMoedaHandler : Handler, IRequestHandler<ObterCotacaoPorMoedaQuery, ObterCotacaoPorMoedaResponse>
     {
-        private TaxaCobranca TaxaCobranca;
+        private TipoSegmento TipoSegmento;
+        private TaxaResponse TaxaResponse;
         private ParametroOutput ValorConversao;
         private KeyValuePair<string, decimal> Cotacao;
 
+        private readonly ICacheProvider _cacheProvider;
         private readonly ICadernoFormulasService _cadernoFormulasService;
         private readonly ITaxaCobrancaRepository _taxaCobrancaRepository;
         private readonly IExchangeRatesApiConnector _exchangeRatesApiConnector;
@@ -24,9 +29,11 @@
                                            ILoggerFactory logger,
                                            IExchangeRatesApiConnector exchangeRatesApiConnector,
                                            ICadernoFormulasService cadernoFormulasService,
-                                           ITaxaCobrancaRepository taxaCobrancaRepository)
+                                           ITaxaCobrancaRepository taxaCobrancaRepository,
+                                           ICacheProvider cacheProvider)
             : base(mediator, logger.CreateLogger<ObterCotacaoPorMoedaHandler>())
         {
+            _cacheProvider = cacheProvider;
             _cadernoFormulasService = cadernoFormulasService;
             _taxaCobrancaRepository = taxaCobrancaRepository;
             _exchangeRatesApiConnector = exchangeRatesApiConnector;
@@ -36,79 +43,114 @@
         {
             var response = (ObterCotacaoPorMoedaResponse)request.Response;
 
-            var tipoSegmento = TipoSegmento.ObterPorId(request.Segmento);
-            if (tipoSegmento is null)
-            {
-                response.AddError(Errors.General.NotFound(nameof(TipoSegmento), request.Segmento));
-
-                Logger.LogWarning($"{response.ErrorResponse}");
-                return response;
-            }
-
-            await ObterTaxaCobrancaPorSegmento(request, response, tipoSegmento);
+            ObterCotacaoPorMoedaQueryValidator.ValidarQuery(request, response);
             if (response.IsFailure)
                 return response;
 
-            Cotacao = await _exchangeRatesApiConnector.OberUltimaCotacaoPorMoeda(request.Moeda);
-
-            ExecutarCalculoContacao(request, response);
+            ObterTipoSegmentoPorId(request, response);
             if (response.IsFailure)
                 return response;
 
-            response.SetPayLoad(CreateResponse(request));
+            await ObterTaxaCobrancaPorSegmento(request, response);
+            if (response.IsFailure)
+                return response;
+
+            await OberUltimaCotacaoPorMoeda(request, response);
+            if (response.IsFailure)
+                return response;
+
+            ExecutarCalculoCotacao(request, response);
+            if (response.IsFailure)
+                return response;
+
+            CreateResponse(request, response);
 
             return response;
         }
 
-        private CotacaoPorMoedaResponse CreateResponse(ObterCotacaoPorMoedaQuery request)
-        {
-            return new CotacaoPorMoedaResponse
-            {
-                MoedaDe = request.Moeda,
-                MoedaPara = Cotacao.Key,
-                ValorCotacao = ValorConversao.Valor,
-                Quantidade = request.Quantidade
-            };
-        }
-
-        private async Task ObterTaxaCobrancaPorSegmento(ObterCotacaoPorMoedaQuery request, ObterCotacaoPorMoedaResponse response, TipoSegmento tipoSegmento)
+        private async Task OberUltimaCotacaoPorMoeda(ObterCotacaoPorMoedaQuery request, ObterCotacaoPorMoedaResponse response)
         {
             try
             {
-                TaxaCobranca = await _taxaCobrancaRepository.ObterTaxaCobrancaPorSegmento(tipoSegmento.Id);
-                if (string.IsNullOrEmpty(TaxaCobranca.TaxaCobrancaId))
+                Cotacao = await _exchangeRatesApiConnector.OberUltimaCotacaoPorMoeda(request.Moeda);
+                if (Cotacao.Equals(default))
+                {
+                    response.AddError(Errors.General.NotFound("ModeEstrangeira", request.Moeda));
+                    Logger.LogWarning($"{response.ErrorResponse}");
+
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.AddError(Errors.General.InternalProcessError("OberUltimaCotacaoPorMoeda", ex.Message));
+                Logger.LogError(ex, $"{response.ErrorResponse}");
+            }
+        }
+
+        private void ObterTipoSegmentoPorId(ObterCotacaoPorMoedaQuery request, ObterCotacaoPorMoedaResponse response)
+        {
+            TipoSegmento = TipoSegmento.ObterPorId(request.Segmento);
+            if (TipoSegmento is null)
+            {
+                response.AddError(Errors.General.NotFound(nameof(TipoSegmento), request.Segmento));
+                Logger.LogWarning($"{response.ErrorResponse}");
+
+                return;
+            }
+        }
+
+        private async Task ObterTaxaCobrancaPorSegmento(ObterCotacaoPorMoedaQuery request, ObterCotacaoPorMoedaResponse response)
+        {
+            try
+            {
+                TaxaResponse = await _cacheProvider.GetValueOrCreate(TipoSegmento.Id, async () =>
+                {
+                    var taxaCobranca = await _taxaCobrancaRepository.ObterTaxaCobrancaPorSegmento(TipoSegmento.Id);
+                    return taxaCobranca.ConverterEntidadeParaResponse();
+                });
+
+                if (TaxaResponse.Equals(default))
                 {
                     response.AddError(Errors.General.NotFound(nameof(TaxaCobranca), request.Segmento));
-
                     Logger.LogWarning($"{response.ErrorResponse}");
+
                     return;
                 }
             }
             catch (Exception ex)
             {
                 response.AddError(Errors.General.InternalProcessError("ObterTaxaCobrancaPorSegmento", ex.Message));
-
                 Logger.LogError(ex, $"{response.ErrorResponse}");
-                return;
             }
         }
 
-        private void ExecutarCalculoContacao(ObterCotacaoPorMoedaQuery request, ObterCotacaoPorMoedaResponse response)
+        private void ExecutarCalculoCotacao(ObterCotacaoPorMoedaQuery request, ObterCotacaoPorMoedaResponse response)
         {
-            var formula = new ConversaoMoedaFormula(new ConversaoMoedaParametroInput(request.Quantidade, Cotacao.Value, TaxaCobranca.ValorTaxa.Valor));
+            var formula = new ConversaoMoedaFormula(new ConversaoMoedaParametroInput(request.Quantidade, Cotacao.Value, TaxaResponse.ValorTaxa));
 
             var resultadoValorContacao = _cadernoFormulasService.Compute(formula);
             if (resultadoValorContacao.IsFailure)
             {
-                var countError = 1;
-                var invalidQueryParameters = Errors.General.InvalidQueryParameters();
-                foreach (var error in resultadoValorContacao.Messages)
-                    invalidQueryParameters.AddErroDetail(Errors.General.InvalidArgument($"InvalidArgumentConsulta{countError}", error));
-
+                var invalidQueryParameters = Errors.General
+                                                .InvalidQueryParameters()
+                                                .AddErroDetail(Errors.General.InvalidArgument($"ParametroCalculoModeInvalidos", string.Join("|", resultadoValorContacao.Messages)));
                 response.AddError(invalidQueryParameters);
             }
 
             ValorConversao = resultadoValorContacao.Value;
+        }
+
+        private void CreateResponse(ObterCotacaoPorMoedaQuery request, ObterCotacaoPorMoedaResponse response)
+        {
+            response.SetPayLoad(new CotacaoPorMoedaResponse
+            {
+                MoedaDe = new MoedaResponse { Moeda = Cotacao.Key, ValorUnitario = 1 },
+                MoedaPara = new MoedaResponse { Moeda = request.Moeda, ValorUnitario = Cotacao.Value },
+                TaxaConversao = TaxaResponse.ValorTaxa,
+                ValorCotacao = ValorConversao.Valor,
+                QuantidadeDesejada = request.Quantidade,
+            });
         }
     }
 }

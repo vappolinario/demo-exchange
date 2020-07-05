@@ -2,6 +2,7 @@
 {
     using Demo.Exchange.Application.Commands.AtualizarTaxa;
     using Demo.Exchange.Application.Commands.RegistrarNovaTaxa;
+    using Demo.Exchange.Application.Models;
     using Demo.Exchange.Application.Queries.ObterTaxaCobrancaPorSegmento;
     using MediatR;
     using Microsoft.AspNetCore.Mvc;
