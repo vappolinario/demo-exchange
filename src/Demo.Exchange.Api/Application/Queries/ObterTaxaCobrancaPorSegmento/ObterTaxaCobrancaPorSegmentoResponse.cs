@@ -1,6 +1,6 @@
 ﻿namespace Demo.Exchange.Application.Queries.ObterTaxaCobrancaPorSegmento
 {
-    using Demo.Exchange.Application.Commands.RegistrarNovaTaxa;
+    using Demo.Exchange.Application.Models;
 
     public class ObterTaxaCobrancaPorSegmentoResponse : Response<TaxaResponse>
     {

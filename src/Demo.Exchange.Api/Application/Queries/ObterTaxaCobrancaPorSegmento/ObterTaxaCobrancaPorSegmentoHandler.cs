@@ -1,6 +1,7 @@
 ﻿namespace Demo.Exchange.Application.Queries.ObterTaxaCobrancaPorSegmento
 {
     using Demo.Exchange.Application.Commands.RegistrarNovaTaxa;
+    using Demo.Exchange.Application.Models;
     using Demo.Exchange.Domain.AggregateModel.TaxaModel;
     using Demo.Exchange.Infra.Cache.Memcached;
     using MediatR;
