@@ -24,7 +24,7 @@
 
         [TestCase(5, 5, false)]
         [TestCase(5, 2, true)]
-        public void Deve_Criar_TaxaCobranca_Valida_1(decimal valorCorrente, decimal valorNovo, bool resultaEsperado)
+        public void Deve_Validar_Alteracao_ValueObject_ValorTaxaCobranca(decimal valorCorrente, decimal valorNovo, bool resultaEsperado)
         {
             var novoId = Guid.NewGuid().ToString();
             var valorTaxaCobranaca = ValorTaxaCobranca.Create(valorCorrente);
