@@ -21,6 +21,7 @@
         private KeyValuePair<string, decimal> Cotacao;
 
         private readonly ICacheProvider _cacheProvider;
+        private readonly ICacheRepository _cacheRepository;
         private readonly ICadernoFormulasService _cadernoFormulasService;
         private readonly ITaxaCobrancaRepository _taxaCobrancaRepository;
         private readonly IExchangeRatesApiConnector _exchangeRatesApiConnector;
@@ -30,10 +31,12 @@
                                            IExchangeRatesApiConnector exchangeRatesApiConnector,
                                            ICadernoFormulasService cadernoFormulasService,
                                            ITaxaCobrancaRepository taxaCobrancaRepository,
-                                           ICacheProvider cacheProvider)
+                                           ICacheProvider cacheProvider,
+                                           ICacheRepository cacheRepository)
             : base(mediator, logger.CreateLogger<ObterCotacaoPorMoedaHandler>())
         {
             _cacheProvider = cacheProvider;
+            _cacheRepository = cacheRepository;
             _cadernoFormulasService = cadernoFormulasService;
             _taxaCobrancaRepository = taxaCobrancaRepository;
             _exchangeRatesApiConnector = exchangeRatesApiConnector;
@@ -104,17 +107,20 @@
         {
             try
             {
-                TaxaResponse = await _cacheProvider.GetValueOrCreate(TipoSegmento.Id, async () =>
+                TaxaResponse = await ObterTaxaEstrategiCache(async () =>
                 {
                     var taxaCobranca = await _taxaCobrancaRepository.ObterTaxaCobrancaPorSegmento(TipoSegmento.Id);
-                    return taxaCobranca.ConverterEntidadeParaResponse();
-                });
+                    if (string.IsNullOrEmpty(taxaCobranca.TaxaCobrancaId))
+                        return default;
 
-                if (TaxaResponse.Equals(default))
+                    return taxaCobranca.ConverterEntidadeParaResponse();
+
+                }, async () => await _cacheProvider.Get<TaxaResponse>(TipoSegmento.Id));
+
+                if (string.IsNullOrEmpty(TaxaResponse.Id))
                 {
                     response.AddError(Errors.General.NotFound(nameof(TaxaCobranca), request.Segmento));
                     Logger.LogWarning($"{response.ErrorResponse}");
-
                     return;
                 }
             }
@@ -123,6 +129,19 @@
                 response.AddError(Errors.General.InternalProcessError("ObterTaxaCobrancaPorSegmento", ex.Message));
                 Logger.LogError(ex, $"{response.ErrorResponse}");
             }
+        }
+
+        private async Task<TaxaResponse> ObterTaxaEstrategiCache(Func<Task<TaxaResponse>> fromRepo, Func<Task<TaxaResponse>> fromCache)
+        {
+            TaxaResponse taxaResponse = await fromCache();
+            if (!string.IsNullOrEmpty(taxaResponse.Id))
+                return taxaResponse;
+
+            taxaResponse = await fromRepo();
+            if (!string.IsNullOrEmpty(taxaResponse.Id))
+                await _cacheRepository.Set(TipoSegmento.Id, taxaResponse);
+
+            return taxaResponse;
         }
 
         private void ExecutarCalculoCotacao(ObterCotacaoPorMoedaQuery request, ObterCotacaoPorMoedaResponse response)
