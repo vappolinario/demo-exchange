@@ -35,6 +35,8 @@ namespace Demo.Exchange.Api
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseConfigDemoExchangeApp();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
