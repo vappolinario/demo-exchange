@@ -1,7 +1,6 @@
 namespace Demo.Exchange.Api
 {
     using Demo.Exchange.Extensions.IoC;
-    using Demo.Exchange.Tasks;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
@@ -29,7 +28,6 @@ namespace Demo.Exchange.Api
 
             services.AddHttpClient();
             services.AddControllers();
-            services.AddHostedService<OberUltimaCotacaoWorkerService>();
             services.AddDemoExchangeServices(Configuration);
         }
 

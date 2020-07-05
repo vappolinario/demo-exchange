@@ -10,7 +10,7 @@
     using System.Text.Json;
     using System.Threading.Tasks;
 
-    public class ExchangeRate
+    public struct ExchangeRate
     {
         public string Base { get; set; }
         public string Date { get; set; }
@@ -24,17 +24,23 @@
 
     public class ExchangeRatesApiConnector : Connector, IExchangeRatesApiConnector
     {
-        public ExchangeRatesApiConnector(IHttpClientFactory httpClient, ILoggerFactory logger, IOptions<EndPointConnectorsOptions> endPointConnectorsOptions)
+        private readonly AppConfigOptions _appConfigOptions;
+
+        public ExchangeRatesApiConnector(IHttpClientFactory httpClient,
+                                         ILoggerFactory logger,
+                                         IOptions<AppConfigOptions> appConfigOptions,
+                                         IOptions<EndPointConnectorsOptions> endPointConnectorsOptions)
             : base(httpClient, logger.CreateLogger<ExchangeRatesApiConnector>(), endPointConnectorsOptions.Value.ExchangeRatesApiConnector)
         {
+            _appConfigOptions = appConfigOptions.Value;
         }
 
         public async Task<KeyValuePair<string, decimal>> OberUltimaCotacaoPorMoeda(string moeda)
         {
+            var endpoint = string.Concat(_connectorBaseUri.AbsoluteUri.TrimEnd('/'), $"{ConnectorRoutes.OberUltimaCotacaoPorMoeda(moeda)}");
+
             try
             {
-                var endpoint = string.Concat(_connectorBaseUri.AbsoluteUri.TrimEnd('/'), $"{ConnectorRoutes.OberUltimaCotacaoPorMoeda(moeda)}");
-
                 var client = _httpClient.CreateClient();
                 var httpResponseMessage = await client.GetAsync(endpoint);
 
@@ -44,14 +50,11 @@
 
                 var exchangeRate = JsonSerializer.Deserialize<ExchangeRate>(content, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
-                if (!exchangeRate.Rates.Any(x => x.Key.Equals("BRL", StringComparison.InvariantCultureIgnoreCase)))
-                    return default;
-
-                return exchangeRate.Rates.FirstOrDefault(x => x.Key.Equals("BRL", StringComparison.InvariantCultureIgnoreCase));
+                return exchangeRate.Rates.FirstOrDefault(x => x.Key.Equals(_appConfigOptions.MoedaLocal, StringComparison.InvariantCultureIgnoreCase));
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "");
+                Logger.LogError(ex, $"Falha ao consultar cotações de moeda estrangeira no Endpoint {endpoint}");
                 throw;
             }
         }
