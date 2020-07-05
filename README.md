@@ -11,7 +11,7 @@ Para o banco de dados, foi utilizado o MariaDB
 
 **Comando acima irá expor a porta 3306 para utilizar instâncias do MariaDB**
 
-**Recomandado utilizar o client DBeaver para administração do banco de dados https://dbeaver.io/**
+**Recomendado utilizar o client DBeaver para administração do banco de dados https://dbeaver.io/**
 
 Para o mecanismo de cache, foi utilizado Memcached
 
@@ -46,28 +46,3 @@ A aplicação faz uso dos seguintes packages (nuget):
 **https://www.nuget.org/packages/EnyimMemcachedCore/ : Bliblioteca que abstrai utilização do Memcached**
 
 **https://www.nuget.org/packages/MySqlConnector/ : Bliblioteca que abstrai para utilização do MariDB**
-
-## Fontes de referência
-https://www.twitch.tv/phatboyg
-
-Canal do Twitch do criador do Masstransit
-
-https://jimmybogard.com/
-
-Criador dos pacotes MediatR e AutoMapper além de ótimas apresensetações no NDC.
-
-https://www.stevejgordon.co.uk/
-
-Blog voltado a performance de aplicações ASP.NET Core
-
-https://dotnet.microsoft.com/learn/dotnet/architecture-guides
-
-Ótimos exemplos de como criar a realizar deploy de aplicação com docker e desenvolvimento de microsserviços
-
-https://d0.awsstatic.com/whitepapers/performance-at-scale-with-amazon-elasticache.pdf
-
-Documetanção da Amazon para uso de estratégias de cache
-
-https://github.com/microsoft/api-guidelines/blob/vNext/Guidelines.md#3-introduction
-
-Guidelines para criação de aplicações REST.
