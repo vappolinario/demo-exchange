@@ -10,13 +10,13 @@
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddConnectors();
-            services.AddTransient<ITaxaCobrancaRepository, TaxaCobrancaRepository>();
+            services.AddScoped<ITaxaCobrancaRepository, TaxaCobrancaRepository>();
             return services;
         }
 
         private static IServiceCollection AddConnectors(this IServiceCollection services)
         {
-            services.AddTransient<IExchangeRatesApiConnector, ExchangeRatesApiConnector>();
+            services.AddScoped<IExchangeRatesApiConnector, ExchangeRatesApiConnector>();
             return services;
         }
     }

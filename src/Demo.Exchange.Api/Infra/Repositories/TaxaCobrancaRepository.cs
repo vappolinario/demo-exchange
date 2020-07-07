@@ -126,12 +126,6 @@
         public DateTime CriadoEm { get; set; }
         public DateTime AtualizadoEm { get; set; }
 
-        public TaxaCobranca ConverterDtoParaEntidade()
-        {
-            var valorTaxa = ValorTaxaCobranca.Create(ValorTaxa);
-            var tipoSegmento = TipoSegmento.ObterPorId(Segmento);
-
-            return new TaxaCobranca(TaxaCobrancaId, valorTaxa.Value, tipoSegmento);
-        }
+        public TaxaCobranca ConverterDtoParaEntidade() => new TaxaCobranca(TaxaCobrancaId, ValorTaxa, Segmento);
     }
 }

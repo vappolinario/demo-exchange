@@ -28,7 +28,6 @@
   <ItemGroup>
     <Folder Include="Controllers\v1\" />
     <Folder Include="Domain\AggregateModels\TaxaModel\" />
-    <Folder Include="Domain\SeedWorks\" />
     <Folder Include="Domain\Services\CadernoFomulas\" />
   </ItemGroup>
 

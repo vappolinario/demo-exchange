@@ -3,7 +3,7 @@
     using Demo.Exchange.Domain.SeedWorks;
     using System;
 
-    public class TaxaCobranca : Entity
+    public class TaxaCobranca : Entity, IAggregateRoot
     {
         protected TaxaCobranca()
         {

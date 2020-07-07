@@ -18,6 +18,15 @@
 
         public string DesricaoSimples { get; }
 
+        public static implicit operator TipoSegmento(string id)
+        {
+            var tipoSegmento = ObterPorId(id);
+            if (tipoSegmento is null)
+                throw new ArgumentException(nameof(id));
+
+            return tipoSegmento;
+        }
+
         public static TipoSegmento ObterPorId(string id)
             => GetAll<TipoSegmento>().SingleOrDefault(x => x.Id.Equals(id, StringComparison.InvariantCultureIgnoreCase));
     }

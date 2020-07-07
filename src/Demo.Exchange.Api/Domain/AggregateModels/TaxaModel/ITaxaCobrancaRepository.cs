@@ -1,8 +1,9 @@
-﻿using System.Threading.Tasks;
-
-namespace Demo.Exchange.Domain.AggregateModel.TaxaModel
+﻿namespace Demo.Exchange.Domain.AggregateModel.TaxaModel
 {
-    public interface ITaxaCobrancaRepository
+    using Demo.Exchange.Domain.SeedWorks;
+    using System.Threading.Tasks;
+
+    public interface ITaxaCobrancaRepository : IRepository<TaxaCobranca>
     {
         Task Registrar(TaxaCobranca taxaCobranca);
 

@@ -1,6 +1,7 @@
 ﻿namespace Demo.Exchange.Domain.AggregateModel.TaxaModel
 {
     using Demo.Exchange.Domain.SeedWorks;
+    using System;
     using System.Collections.Generic;
 
     public class ValorTaxaCobranca : ValueObject
@@ -19,6 +20,15 @@
         }
 
         public decimal Valor { get; }
+
+        public static implicit operator ValorTaxaCobranca(decimal valorTaxa)
+        {
+            var resultadoValor = Create(valorTaxa);
+            if (resultadoValor.IsFailure)
+                throw new ArgumentOutOfRangeException(string.Join("|", resultadoValor.Messages));
+
+            return resultadoValor.Value;
+        }
 
         protected override IEnumerable<object> GetAtomicValues()
         {
