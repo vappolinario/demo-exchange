@@ -142,7 +142,7 @@
 
             resultado.IsSuccess.Should().BeTrue();
             resultado.PayLoad.ValorTaxa.Should().Be(VALOR_TAXA_ESPERADO);
-            resultado.PayLoad.TipoSegmento.Should().Be(TipoSegmento.Varejo.DesricaoSimples);
+            resultado.PayLoad.TipoSegmento.Should().Be(TipoSegmento.Varejo.Id);
         }
 
         private RegistrarNovaTaxaCommandHandler CreateSut() => new RegistrarNovaTaxaCommandHandler(mediator, logger, taxaCobrancaRepository);
