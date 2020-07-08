@@ -20,9 +20,9 @@
             AddDomainEvent(new NovaTaxaRegistradaEvent(this));
         }
 
-        public string TaxaCobrancaId { get; private set; }
+        public string TaxaCobrancaId { get; }
         public ValorTaxaCobranca ValorTaxa { get; private set; }
-        public TipoSegmento TipoSegmento { get; private set; }
+        public TipoSegmento TipoSegmento { get; }
         public DateTime CriadoEm { get; } = DateTime.Now;
         public DateTime AtualizadoEm { get; private set; }
 
