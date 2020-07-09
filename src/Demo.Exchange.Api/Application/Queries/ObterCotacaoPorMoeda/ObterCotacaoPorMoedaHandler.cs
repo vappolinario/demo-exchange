@@ -114,7 +114,6 @@
                         return default;
 
                     return taxaCobranca.ConverterEntidadeParaResponse();
-
                 }, async () => await _cacheProvider.Get<TaxaResponse>(TipoSegmento.Id));
 
                 if (string.IsNullOrEmpty(TaxaResponse.Id))
