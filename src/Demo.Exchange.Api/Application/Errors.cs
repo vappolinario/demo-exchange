@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace Demo.Exchange.Application
+﻿namespace Demo.Exchange.Application
 {
+    using Microsoft.AspNetCore.Http;
+
     public static partial class Errors
     {
         public static class General

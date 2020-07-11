@@ -20,9 +20,11 @@
 
         public async Task Atualizar(TaxaCobranca taxaCobranca) => await ExecutarAtualizar(taxaCobranca);
 
-        public async Task<TaxaCobranca> ObterPorId(string id) => await ExecutarObterPorId(id);
+        public async Task<TaxaCobranca> ObterPorId(string id)
+            => await ExecutaConsultaEConversao(async _ => await GetConnection().QueryFirstOrDefaultAsync<TaxaCobrancaDto>(TaxaCobrancaStatements.ObterTaxaCobrancaPorSegmento, new { id }), id);
 
-        public async Task<TaxaCobranca> ObterTaxaCobrancaPorSegmento(string segmento) => await ExecutarObterTaxaCobrancaPorSegmento(segmento);
+        public async Task<TaxaCobranca> ObterTaxaCobrancaPorSegmento(string segmento)
+            => await ExecutaConsultaEConversao(async _ => await GetConnection().QueryFirstOrDefaultAsync<TaxaCobrancaDto>(TaxaCobrancaStatements.ObterTaxaCobrancaPorSegmento, new { segmento }), segmento);
 
         private async Task ExecutarRegistrar(TaxaCobranca taxaCobranca)
         {
@@ -69,52 +71,16 @@
             }
         }
 
-        private async Task<TaxaCobranca> ExecutarObterTaxaCobrancaPorSegmento(string segmento)
+        private async Task<TaxaCobranca> ExecutaConsultaEConversao<T>(Func<T, Task<TaxaCobrancaDto>> func, T parameter)
         {
-            var taxaCobranca = TaxaCobranca.EntidadeDefault();
+            if (func is null)
+                throw new ArgumentNullException(nameof(func));
 
-            try
-            {
-                using (var conn = GetConnection())
-                {
-                    taxaCobranca = VerificarStatusConsulta(taxaCobranca, await conn.QueryFirstOrDefaultAsync<TaxaCobrancaDto>(TaxaCobrancaStatements.ObterTaxaCobrancaPorSegmento, new { segmento }));
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, $"Falha ao consultar a taxa de cobrança pelo tipo de segmento: {segmento}");
-                throw;
-            }
+            var dto = await func(parameter);
+            if (dto.Equals(default(TaxaCobrancaDto)))
+                return TaxaCobranca.EntidadeDefault();
 
-            return taxaCobranca;
-        }
-
-        private async Task<TaxaCobranca> ExecutarObterPorId(string id)
-        {
-            var taxaCobranca = TaxaCobranca.EntidadeDefault();
-
-            try
-            {
-                using (var conn = GetConnection())
-                {
-                    taxaCobranca = VerificarStatusConsulta(taxaCobranca, await conn.QueryFirstOrDefaultAsync<TaxaCobrancaDto>(TaxaCobrancaStatements.ObterPorId, new { id }));
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, $"Falha ao consultar a taxa de cobrança pelo id: {id}");
-                throw;
-            }
-
-            return taxaCobranca;
-        }
-
-        private static TaxaCobranca VerificarStatusConsulta(TaxaCobranca taxaCobranca, TaxaCobrancaDto dto)
-        {
-            if (!dto.Equals(default(TaxaCobrancaDto)))
-                taxaCobranca = dto.ConverterDtoParaEntidade();
-
-            return taxaCobranca;
+            return dto.ConverterDtoParaEntidade();
         }
     }
 

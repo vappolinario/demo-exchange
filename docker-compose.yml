@@ -6,7 +6,9 @@ services:
     networks:
       - net
     ports:
-      - 3306:3306
+      - "3306:3306"
+    volumes:
+      - /data/mariadb:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: admin
 
@@ -15,10 +17,10 @@ services:
     networks:
       - net
     ports:
-      - 11211:11211
+      - "11211:11211"
 
   demo.exchange.api:
-    image: demoexchangeapi
+    image: demo/demo-exchange-api
     build:
       context: .
       dockerfile: src/Demo.Exchange.Api/Dockerfile
