@@ -44,7 +44,7 @@
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, $"Falha ao registrar a taxa de cobrança.");
+                Logger.LogError(ex, "Falha ao registrar a taxa de cobrança.");
                 throw;
             }
         }
@@ -66,7 +66,7 @@
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, $"Falha ao atualizar a taxa de cobrança.");
+                Logger.LogError(ex, "Falha ao atualizar a taxa de cobrança.");
                 throw;
             }
         }
@@ -76,7 +76,7 @@
             if (func is null)
                 throw new ArgumentNullException(nameof(func));
 
-            var dto = await func(parameter);
+            var dto = await func(parameter).ConfigureAwait(false);
             if (dto.Equals(default(TaxaCobrancaDto)))
                 return TaxaCobranca.EntidadeDefault();
 
