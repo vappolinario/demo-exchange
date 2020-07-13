@@ -161,9 +161,10 @@
 
         private void CreateResponse(ObterCotacaoPorMoedaQuery request, ObterCotacaoPorMoedaResponse response)
         {
+            const int VALOR_UNITARIO_MOEDA_LOCAL = 1;
             response.SetPayLoad(new CotacaoPorMoedaResponse
             {
-                MoedaDe = new MoedaResponse { Moeda = Cotacao.Key, ValorUnitario = 1 },
+                MoedaDe = new MoedaResponse { Moeda = Cotacao.Key, ValorUnitario = VALOR_UNITARIO_MOEDA_LOCAL },
                 MoedaPara = new MoedaResponse { Moeda = request.Moeda, ValorUnitario = Cotacao.Value },
                 TaxaConversao = TaxaResponse.ValorTaxa,
                 ValorCotacao = ValorConversao.Valor,
