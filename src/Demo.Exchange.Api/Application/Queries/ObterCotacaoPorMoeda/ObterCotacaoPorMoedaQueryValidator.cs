@@ -2,7 +2,7 @@
 {
     using FluentValidation;
 
-    public class ObterCotacaoPorMoedaQueryValidator : AbstractValidator<ObterCotacaoPorMoedaQuery>
+    public sealed class ObterCotacaoPorMoedaQueryValidator : AbstractValidator<ObterCotacaoPorMoedaQuery>
     {
         private ObterCotacaoPorMoedaQueryValidator()
         {
